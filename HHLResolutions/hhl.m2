@@ -202,3 +202,25 @@ hhlVectors(NormalToricVariety, Matrix) := (Y, phi) -> (
     g := mingens L;
     raysMatrix * g
     )
+
+
+bondalThomsenStrata = method()
+bondalThomsenStrata(List) := (normals) -> (
+    normalsMatrix := matrix normals;
+    L := source normalsMatrix;
+    Lgens := mingens L;
+    degreeSpace := cokernel normalsMatrix;
+    degreeMap := inducedMap(degreeSpace, target normalsMatrix);
+    hp := makeHHLPolytopes(normalsMatrix,source normalsMatrix);
+    (verts,faces) := toFacesByDimension(hp#0);
+    pointToFineDegree := p -> (transpose matrix {apply(entries (normalsMatrix * p), ceiling)})_0;
+    allPolyhedra := select(flatten values faces, p -> p!={});
+    hulls := hashTable apply(allPolyhedra, p -> (p, convexHull verts_p));
+    pointsTable := hashTable apply(allPolyhedra, p -> (p, (1/#p * sum cols verts_p)_0));
+    fineDegreeTable := applyValues(pointsTable, pointToFineDegree);
+    polytopeClassesByCodimension := applyValues(faces,
+        polys -> partitionVertices(pointsTable, Lgens, polys));
+    strata := partition(x -> degreeMap (fineDegreeTable#(x#0)),
+        flatten values polytopeClassesByCodimension);
+    applyValues(strata, reps -> apply(flatten reps, p -> hulls#p))
+    )

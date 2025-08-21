@@ -27,7 +27,8 @@ export {
     "andersonLaurentModule",
     "hhlLaurentModule",
     "gensToLaurentModule",
-    "andersonDiagonalResolution"
+    "andersonDiagonalResolution",
+    "bondalThomsenStrata"
     }
 
 
@@ -43,6 +44,7 @@ end--
 
 restart
 installPackage "HHLResolutions"
+needsPackage "HHLResolutions"
 check HHLResolutions
 viewHelp HHLResolutions
 
@@ -65,6 +67,7 @@ G' := andersonDiagonalModuleGens(X)
 V := andersonDiagonalModuleVertices(X)
 apply(V,v -> andersonVertexToExponent(X,v))
 
+netList pairs bondalThomsenStrata rays X
 
 ML := module G_0
 ML_7
