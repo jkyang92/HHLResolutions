@@ -28,7 +28,8 @@ export {
     "hhlLaurentModule",
     "gensToLaurentModule",
     "andersonDiagonalResolution",
-    "bondalThomsenStrata"
+    "bondalThomsenStrata",
+    "makeResolution"
     }
 
 

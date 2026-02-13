@@ -76,5 +76,5 @@ makeResolution = (RT) -> (
                 ))
             )
         );
-    chainComplex boundaries
+    complex boundaries
     )
