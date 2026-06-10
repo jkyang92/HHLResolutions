@@ -29,7 +29,7 @@ doc ///
         g : Matrix
             the matrix of the map on N-lattices
     Outputs
-        : ChainComplex
+        : Complex
     Description
         Text
             TODO
@@ -47,7 +47,7 @@ doc ///
         X : NormalToricVariety
             the variety for which to compute the resolution of the diagonal
     Outputs
-        : ChainComplex
+        : Complex
     Description
         Text
             TODO

@@ -43,7 +43,7 @@ makeAndersonResolutionTable = (X,raysMatrix,cells,L) -> (
 andersonDiagonalResolution = method();
 andersonDiagonalResolution(NormalToricVariety) := (X) -> (
     d := dim X;
-    (cells,raysMatrix,L) := makeHHLPolytopes(X, matrix toList (d:{}));
+    (cells,raysMatrix,L,fundamentalRays) := makeHHLPolytopes(X, matrix toList (d:{}));
     printerr("Cells Complete, " | #cells | " cells found");
     n := rank L;
     RT := makeAndersonResolutionTable(X, raysMatrix, cells, mingens (ZZ^n));

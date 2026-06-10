@@ -1,13 +1,15 @@
 newPackage(
     "HHLResolutions",
-    Version => "0.1",
-    Date => "July 15, 2024",
+    Version => "0.2",
+    Date => "June 10, 2026",
     Authors => {
+        { Name => "Jay Yang"
+        , Email => "jay.k.yang@vanderbilt.edu"}
         },
     Headline => "Code to work with HHL and related resolutions",
     AuxiliaryFiles => true,
     PackageExports => {"NormalToricVarieties"},
-    PackageImports => {"PruneComplex"},
+    PackageImports => {},
     DebuggingMode => true
     )
 

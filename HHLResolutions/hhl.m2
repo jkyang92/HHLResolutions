@@ -140,6 +140,17 @@ makeHHLPolytopesRelative(NormalToricVariety,ToricMap,Matrix) := (Y,phi,fundement
     L := ker transpose phi;
     (subdivide(K,fundementalRays, raysMatrix),L)
     )
+makeHHLPolytopesRelative(Matrix, Module, Matrix) := (A, L, fundamentalRays) -> (
+    g := mingens L;
+    A' := A * g;
+    n := rank L;
+    K := polyhedronFromHData(map(ZZ^0,ZZ^n,0),map(ZZ^0,ZZ^1,0));
+    -- the fundamental rays
+    V := fundamentalRays * g;
+    assert(rank A' == dim K);
+    cells := subdivide(K,V,A');
+    (cells,L)    
+    )
 
 --find a subset of the columns of psi which has maximal rank
 --and where the ideal of minors in ZZ has minimal non-zero generator
@@ -178,14 +189,14 @@ makeHHLPolytopes(Matrix, Module) := (A, L) -> (
     -- K := kernelPolyhedron phi;
     assert(rank A' == dim K);
     cells := subdivide(K,V,A');
-    (cells,A',g))
+    (cells,A',g,V))
 
 
 --expects a toric variety, and a matrix mapping into the N-latice for Y, giving a toric inclusion.
 makeHHLResolution = method()
 makeHHLResolution ToricMap := phi -> makeHHLResolution(target phi, matrix phi)
 makeHHLResolution(NormalToricVariety, Matrix) := (Y, phi) -> (
-    elapsedTime (cells, raysMatrix, L) := makeHHLPolytopes(Y, phi); -- ~26s all in sliceByHyperplanes
+    elapsedTime (cells, raysMatrix, L, fundamentalRays) := makeHHLPolytopes(Y, phi); -- ~26s all in sliceByHyperplanes
     printerr("Cells Complete, " | #cells | " cells found");
     n := rank L;
     elapsedTime RT := makeResolutionTable(ring Y, raysMatrix, cells, mingens (ZZ^n)); -- ~28% of the computation here

@@ -76,5 +76,12 @@ makeResolution = (RT) -> (
                 ))
             )
         );
-    complex boundaries
+    if #boundaries == 0
+    then (
+        -- this is the case where there are only cells in a single dimension
+        -- there should only be a single polytope class
+        d := first keys polytopeClassesByDimension;
+        polytopes := polytopeClassesByDimension#d;
+        complex(directSum apply(polytopes, p -> modulesTable#(p#0)), Base => d))
+    else complex boundaries
     )
