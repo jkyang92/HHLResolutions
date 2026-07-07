@@ -2,11 +2,9 @@ makeAndersonResolutionTable = (X,raysMatrix,cells,L) -> (
     S := ring (X**X);
     --verts := vertices PC;
     elapsedTime (verts, faces) := toFacesByDimension cells; -- ~22% of the computation, ~325s
-    d := max keys faces - 1;
-
-    polytopesByDimension := applyKeys(faces,i -> d-i);
+    d := max keys faces;
+    polytopesByDimension := hashTable apply(select(keys faces, i -> i!=-1), k -> (k,faces#k));
     faces = null;
-    polytopesByDimension = hashTable apply(select(keys polytopesByDimension, i -> i!=-1), k -> (k,polytopesByDimension#k));
     degreeMatrix := transpose matrix degrees S;
     pointToFineDegree := p -> (
         v := vector apply(entries (raysMatrix * p), floor);

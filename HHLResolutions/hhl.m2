@@ -44,8 +44,12 @@ toFacesByDimension = (cells) -> (
     verts := unique cols concatCols apply(cells, vertices);
     labels := hashTable toList(reverse \ pairs verts);
     -- Note: computing "faces cell" is very slow
-    labelFaces := (verts, cell) -> applyValues(faces cell, faceList ->
-	apply(faceList, face -> apply(face#0, i -> labels#(verts_{i})) ));
+    labelFaces := (verts, cell) -> (
+        faceTable := applyValues(faces cell, faceList ->
+	    apply(faceList, face -> apply(face#0, i -> labels#(verts_{i})) ));
+        --faces returns a hash table indexed by codim, reverse this hash table
+        d := dim cell;
+        applyKeys(faceTable, i -> d - i));
     facesList := apply(cells, c -> labelFaces(vertices c, c)); -- ~97% of this computation, ~315s
     faceTable := fold(facesList, (h1, h2) -> merge(h1, h2, join));
     (concatCols verts, applyValues(faceTable, unique)))
@@ -77,12 +81,12 @@ complexToPolytopes = PC -> applyKeys(faces PC, k -> dim PC - k - 1)
 makeResolutionTable = (S,raysMatrix,cells,L) -> (
     --verts := vertices PC;
     elapsedTime (verts, faces) := toFacesByDimension cells; -- ~22% of the computation, ~325s
-    d := max keys faces - 1;
+    d := max keys faces;
 
     --polytopesByDimension := complexToPolytopes(PC);
     --polytopesByDimension = hashTable apply(select(keys polytopesByDimension, i -> i!=-1), k -> (k,polytopesByDimension#k));
-    polytopesByDimension := applyKeys(faces,i -> d-i);
-    polytopesByDimension = hashTable apply(select(keys polytopesByDimension, i -> i!=-1), k -> (k,polytopesByDimension#k));
+    --polytopesByDimension := applyKeys(faces,i -> d-i);
+    polytopesByDimension := hashTable apply(select(keys faces, i -> i!=-1), k -> (k,faces#k));
     degreeMatrix := transpose matrix degrees S;
     pointToFineDegree := p -> (transpose matrix {apply(entries (raysMatrix * p), ceiling)})_0;
     pointToDegree := p -> (degreeMatrix * pointToFineDegree p);
@@ -229,9 +233,9 @@ bondalThomsenStrata(List) := (normals) -> (
     hulls := hashTable apply(allPolyhedra, p -> (p, convexHull verts_p));
     pointsTable := hashTable apply(allPolyhedra, p -> (p, (1/#p * sum cols verts_p)_0));
     fineDegreeTable := applyValues(pointsTable, pointToFineDegree);
-    polytopeClassesByCodimension := applyValues(faces,
+    polytopeClassesByDimension := applyValues(faces,
         polys -> partitionVertices(pointsTable, Lgens, polys));
     strata := partition(x -> degreeMap (fineDegreeTable#(x#0)),
-        flatten values polytopeClassesByCodimension);
+        flatten values polytopeClassesByDimension);
     applyValues(strata, reps -> apply(flatten reps, p -> hulls#p))
     )
