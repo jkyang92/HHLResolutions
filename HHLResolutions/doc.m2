@@ -14,14 +14,14 @@ doc ///
 
 doc ///
     Key
-        makeHHLResolution
-        (makeHHLResolution,ToricMap)
-        (makeHHLResolution,NormalToricVariety,Matrix)
+        hhlResolution
+        (hhlResolution,ToricMap)
+        (hhlResolution,NormalToricVariety,Matrix)
     Headline
         Construct the resolution given by HHL
     Usage
-        makeHHLResolution f
-        makeHHLResolution (X,g)
+        hhlResolution f
+        hhlResolution (X,g)
     Inputs
         f : ToricMap
         X : NormalToricVariety
@@ -98,7 +98,7 @@ doc ///
             X = toricProjectiveSpace 3;
             Y = toricProjectiveSpace 1;
             phi = map(X,Y,matrix {{1},{2},{3}})
-            C = makeHHLResolution phi;
+            C = hhlResolution phi;
             Mpsi = hhlLaurentModule phi
             assert(prune HH_0 C == prune Mpsi);
     SeeAlso

@@ -19,6 +19,7 @@ export {
     "makeHHLPolytopes",
     "makeHHLPolytopesRelative",
     "makeHHLResolution",
+    "hhlResolution",
     "hhlVectors",
     "toFacesByDimension",
     "toricSemigroupGens",

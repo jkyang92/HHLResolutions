@@ -4,7 +4,7 @@ X = toricProjectiveSpace 3
 Y = X ** X;
 phi = diagonalToricMap X
 S = ring Y;
-C := makeHHLResolution(Y,matrix phi);
+C := hhlResolution(Y,matrix phi);
 assert (prune HH_0 C == comodule ideal phi);
 assert (prune HH_1 C == 0);
 assert (prune HH_2 C == 0);
@@ -23,7 +23,7 @@ X = hirzebruchSurface 2
 Y = X ** X;
 phi = diagonalToricMap X
 S = ring Y;
-C := makeHHLResolution(Y,matrix phi);
+C := hhlResolution(Y,matrix phi);
 --TODO test HH_0
 assert (prune HH_1 C == 0);
 assert (prune HH_2 C == 0);
@@ -83,7 +83,7 @@ TEST///
 X = hirzebruchSurface 2;
 Y = X**X;
 diag = diagonalToricMap X;
-C = makeHHLResolution diag;
+C = hhlResolution diag;
 Mpsi = hhlLaurentModule diag;
 --The order of generators isn't consistent, TODO fix this test
 --assert(HH_0 C == prune Mpsi);
@@ -96,7 +96,7 @@ TEST ///
   P = convexHull transpose matrix{{0,0,0}, {1,0,0}, {0,1,0}, {1,1,2}}
   -- FIXME: fails because can't find a fundamental domain with unit volume
   -- not projectively normal, so HH_0 must be not the coordinate ring itself
-  C = makeHHLResolution diagonalToricMap normalToricVariety P
+  C = hhlResolution diagonalToricMap normalToricVariety P
   -- this one is projectively normal, so HH_0 should be isomorphic to the coordinate ring
-  C = makeHHLResolution diagonalToricMap normalToricVariety(2 * P)
+  C = hhlResolution diagonalToricMap normalToricVariety(2 * P)
 ///

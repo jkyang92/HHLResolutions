@@ -197,16 +197,17 @@ makeHHLPolytopes(Matrix, Module) := (A, L) -> (
 
 
 --expects a toric variety, and a matrix mapping into the N-latice for Y, giving a toric inclusion.
-makeHHLResolution = method()
-makeHHLResolution ToricMap := phi -> makeHHLResolution(target phi, matrix phi)
-makeHHLResolution(NormalToricVariety, Matrix) := (Y, phi) -> (
+hhlResolution = method()
+hhlResolution ToricMap := phi -> hhlResolution(target phi, matrix phi)
+hhlResolution(NormalToricVariety, Matrix) := (Y, phi) -> (
     elapsedTime (cells, raysMatrix, L, fundamentalRays) := makeHHLPolytopes(Y, phi); -- ~26s all in sliceByHyperplanes
     printerr("Cells Complete, " | #cells | " cells found");
     n := rank L;
     elapsedTime RT := makeResolutionTable(ring Y, raysMatrix, cells, mingens (ZZ^n)); -- ~28% of the computation here
     printerr "Labels Complete";
     elapsedTime makeResolution RT)                      -- ~70% of the computation here
-
+--compatibility with the old name for now
+makeHHLResolution = hhlResolution
 
 --expects a toric map, returns the rays from HHL
 hhlVectors = method()
