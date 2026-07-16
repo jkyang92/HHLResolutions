@@ -19,6 +19,7 @@ export {
     "makeHHLPolytopes",
     "makeHHLPolytopesRelative",
     "makeHHLResolution",
+    "hhlPolytopes",
     "hhlResolution",
     "hhlVectors",
     "toFacesByDimension",

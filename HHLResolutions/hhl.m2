@@ -176,13 +176,13 @@ findMinimalMinorSubset = psi -> (
 )
 
 
-makeHHLPolytopes = method()
-makeHHLPolytopes(NormalToricVariety, Matrix) := (Y,    phi) -> makeHHLPolytopes(matrix rays Y,   kernel transpose phi)
-makeHHLPolytopes(Ring, Matrix)               := (S,    phi) -> makeHHLPolytopes(gale effGenerators S, kernel transpose phi)
+hhlPolytopes = method()
+hhlPolytopes(NormalToricVariety, Matrix) := (Y,    phi) -> hhlPolytopes(matrix rays Y,   kernel transpose phi)
+hhlPolytopes(Ring, Matrix)               := (S,    phi) -> hhlPolytopes(gale effGenerators S, kernel transpose phi)
 --this version takes a ring, a matrix who's rows parameterize the rays, and a matrix where the kernel of the dual gives L
-makeHHLPolytopes(Ring, Matrix,       Module) := (S, A, L) -> makeHHLPolytopes(A,L)
+hhlPolytopes(Ring, Matrix,       Module) := (S, A, L) -> hhlPolytopes(A,L)
 --TODO remove the above version, the ring isn't actually used
-makeHHLPolytopes(Matrix, Module) := (A, L) -> (
+hhlPolytopes(Matrix, Module) := (A, L) -> (
     g := mingens L;
     A' := A * g;
     n := rank L;
@@ -194,13 +194,14 @@ makeHHLPolytopes(Matrix, Module) := (A, L) -> (
     assert(rank A' == dim K);
     cells := subdivide(K,V,A');
     (cells,A',g,V))
-
+--compatibility with the old name for now
+makeHHLPolytopes = hhlPolytopes
 
 --expects a toric variety, and a matrix mapping into the N-latice for Y, giving a toric inclusion.
 hhlResolution = method()
 hhlResolution ToricMap := phi -> hhlResolution(target phi, matrix phi)
 hhlResolution(NormalToricVariety, Matrix) := (Y, phi) -> (
-    elapsedTime (cells, raysMatrix, L, fundamentalRays) := makeHHLPolytopes(Y, phi); -- ~26s all in sliceByHyperplanes
+    elapsedTime (cells, raysMatrix, L, fundamentalRays) := hhlPolytopes(Y, phi); -- ~26s all in sliceByHyperplanes
     printerr("Cells Complete, " | #cells | " cells found");
     n := rank L;
     elapsedTime RT := makeResolutionTable(ring Y, raysMatrix, cells, mingens (ZZ^n)); -- ~28% of the computation here
@@ -227,7 +228,7 @@ bondalThomsenStrata(List) := (normals) -> (
     Lgens := mingens L;
     degreeSpace := cokernel normalsMatrix;
     degreeMap := inducedMap(degreeSpace, target normalsMatrix);
-    hp := makeHHLPolytopes(normalsMatrix,source normalsMatrix);
+    hp := hhlPolytopes(normalsMatrix,source normalsMatrix);
     (verts,faces) := toFacesByDimension(hp#0);
     pointToFineDegree := p -> (transpose matrix {apply(entries (normalsMatrix * p), ceiling)})_0;
     allPolyhedra := select(flatten values faces, p -> p!={});

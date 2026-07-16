@@ -6,7 +6,7 @@ toricSemigroupGens(ToricMap) := (phi) -> (
     X := target phi;
     n := #rays X;
     raysMatrix := matrix rays X;
-    (cells,raysMatrix',L, fundamentalRays) := makeHHLPolytopes(target phi, matrix phi);
+    (cells,raysMatrix',L, fundamentalRays) := hhlPolytopes(target phi, matrix phi);
     ML := ZZ^n/image (raysMatrix * L);
     apply(n,i -> ML_i)
     )
@@ -17,7 +17,7 @@ hhlModuleGens(ToricMap) := (phi) -> (
     X := target phi;
     n := #rays X;
     raysMatrix := matrix rays X;
-    (cells,raysMatrix',L, fundamentalRays) := makeHHLPolytopes(target phi, matrix phi);
+    (cells,raysMatrix',L, fundamentalRays) := hhlPolytopes(target phi, matrix phi);
     ML := ZZ^n/(image (raysMatrix * L));
     pointToFineDegree := p -> (transpose matrix {apply(entries (raysMatrix' * p), ceiling)})_0;
     verts := unique flatten apply(cells,p -> (
@@ -34,7 +34,7 @@ andersonDiagonalModuleVertices(NormalToricVariety) := (X) -> (
     n := #rays X;
     d := dim X;
     raysMatrix := matrix rays X;
-    (cells,raysMatrix',L, fundamentalRays) := makeHHLPolytopes(X, matrix toList (d:{}));
+    (cells,raysMatrix',L, fundamentalRays) := hhlPolytopes(X, matrix toList (d:{}));
     verts := unique flatten apply(cells,p -> (
             V:= vertices p;
             entries transpose V
@@ -55,7 +55,7 @@ andersonDiagonalModuleGens(NormalToricVariety) := (X) -> (
     n := #rays X;
     d := dim X;
     raysMatrix := matrix rays X;
-    (cells,raysMatrix',L, fundamentalRays) := makeHHLPolytopes(X, matrix toList (d:{}));
+    (cells,raysMatrix',L, fundamentalRays) := hhlPolytopes(X, matrix toList (d:{}));
     pointToFineDegree := p -> (
         v := (transpose matrix {apply(entries (raysMatrix' * p), floor)})_0;
         v || -v);
