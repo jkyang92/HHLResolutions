@@ -9,8 +9,9 @@ newPackage(
     Headline => "Code to work with HHL and related resolutions",
     AuxiliaryFiles => true,
     PackageExports => {"NormalToricVarieties"},
-    PackageImports => {},
-    DebuggingMode => true
+    PackageImports => {"SimplicialComplexes"},
+    DebuggingMode => true,
+    HomePage => "https://github.com/jkyang92/HHLResolutions/"
     )
 
 export {
@@ -29,11 +30,15 @@ export {
     "andersonDiagonalModuleVertices",
     "andersonVertexToExponent",
     "andersonLaurentModule",
+    "andersonModule",
     "hhlLaurentModule",
+    "hhlModule",
     "gensToLaurentModule",
+    "gensToToricModule",
     "andersonDiagonalResolution",
     "bondalThomsenStrata",
-    "makeResolution"
+    "makeResolution",
+    "lineBundleBondalThomsenMonad",
     }
 
 
@@ -41,8 +46,9 @@ load "./HHLResolutions/resolution_tools.m2"
 load "./HHLResolutions/hhl.m2"
 load "./HHLResolutions/anderson.m2"
 load "./HHLResolutions/modules.m2"
-load "./HHLResolutions/tests.m2"
+load "./HHLResolutions/monads.m2"
 
+load "./HHLResolutions/tests.m2"
 load "./HHLResolutions/doc.m2"
 
 end--

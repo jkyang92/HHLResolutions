@@ -43,8 +43,6 @@ G := hhlModuleGens(phi);
 assert(#G == 2);
 assert(entries G_0 == {0,0,0,0,0,0,0,0});
 assert(entries G_1 == {-1,0,0,1,1,1,0,0});
-
-
 ///
 
 
@@ -94,9 +92,24 @@ assert(sort degrees HH_0 C == sort degrees prune Mpsi);
 TEST ///
   -- Bruns-Gubeladze example of a triangulation of P^2 which fails projective normality
   P = convexHull transpose matrix{{0,0,0}, {1,0,0}, {0,1,0}, {1,1,2}}
-  -- FIXME: fails because can't find a fundamental domain with unit volume
   -- not projectively normal, so HH_0 must be not the coordinate ring itself
   C = hhlResolution diagonalToricMap normalToricVariety P
   -- this one is projectively normal, so HH_0 should be isomorphic to the coordinate ring
   C = hhlResolution diagonalToricMap normalToricVariety(2 * P)
 ///
+
+
+TEST ///
+  X = toricProjectiveSpace 2;
+  S = ring X;
+  degrees S;
+  --This case corresponds to the FM transform for S(1) (not -1!) which gives the truncation of S(1) at 0.
+  a = {1,0,0};
+  C := lineBundleBondalThomsenMonad(X,a);
+  assert(prune HH_0 C == prune (((image matrix {{x_0,x_2,x_1}}) ** S^{1})));
+  assert(concentration prune C == (0,2));
+  -- only BT collection terms should show up
+  assert(set (-degrees C_0 | -degrees C_1 | -degrees C_2) == set {{-2},{-1},{0}})
+///
+
+

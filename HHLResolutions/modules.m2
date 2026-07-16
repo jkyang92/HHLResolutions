@@ -68,31 +68,33 @@ andersonDiagonalModuleGens(NormalToricVariety) := (X) -> (
     unique apply(verts, v -> vector(ML,entries pointToFineDegree vector v))
     )
 
-gensToLaurentModule = method()
-gensToLaurentModule(List,ToricMap) := (genExponents,phi) -> (
-    diagonalIdeal := ideal phi;
-    S := ring diagonalIdeal;
+gensToToricModule = method()
+gensToLaurentModule = gensToToricModule
+gensToToricModule(List,ToricMap) := (genExponents,phi) -> (
+    imageIdeal := ideal phi;
+    S := ring imageIdeal;
     degreeMatrix := transpose matrix degrees S;
     --get the maximum shift
     shift := apply(transpose genExponents,min);
     shiftDegree := entries (degreeMatrix * vector shift);
     shiftedExponents := apply(genExponents, e -> e-shift);
     print shiftedExponents;
-    shiftModule := S^{-shiftDegree}/diagonalIdeal;
+    shiftModule := S^{-shiftDegree}/imageIdeal;
     --create the submodule
     M := sum apply(shiftedExponents,e -> S_e*shiftModule);
-    M --/diagonalIdeal
+    M
     )
 
---the submodule of the laurant polynomial ring as a module over the polynomial ring
-andersonLaurentModule = method();
-andersonLaurentModule(NormalToricVariety) := (X) -> (
+andersonModule = method();
+andersonModule(NormalToricVariety) := (X) -> (
     gensToLaurentModule(andersonDiagonalModuleGens(X) / entries, diagonalToricMap X)
     )
+andersonLaurentModule = andersonModule;
 
-hhlLaurentModule = method();
-hhlLaurentModule(ToricMap) := (phi) -> (
+hhlModule = method();
+hhlModule(ToricMap) := (phi) -> (
     gensToLaurentModule(hhlModuleGens(phi) / entries, phi)
     )
+hhlLaurentModule = hhlModule;
 
 --TODO get the favero huang module from the stratification...
