@@ -89,7 +89,7 @@ lineBundleBondalThomsenMonad(NormalToricVariety,List) := (X, a) -> (
     S := ring X;
     n := #a;
     --this is the polytope for a single fundamental domain
-    pointPolytopes := makeHHLPolytopes(X,map(ZZ^(dim X),ZZ^0,0));
+    pointPolytopes := hhlPolytopes(X,map(ZZ^(dim X),ZZ^0,0));
     raysMatrix := matrix rays X;
     --the complex of the Alexander dual to the irrelevant ideal
     fullComplex := simplicialComplex (max X / (v -> product (gens S)_v));
@@ -264,14 +264,14 @@ lineBundleBondalThomsenMonad(NormalToricVariety,List) := (X, a) -> (
             else fold((maps1,maps2) -> (
                     merge(maps1,maps2,plus)),allMaps)
             ));
-    print connectingMaps;
+    -- print connectingMaps;
     -- these are the strands of the final complex that
     -- arise from each chamber of the base, they are given
     -- by the restricted HHL complex tensored agains the homology of the fibers
     strands := applyPairs(complexData, (s,dat) -> (
         s => (source dat#"inc")**(S**prune HH memoizedFibers(s))
         ));
-    print strands;
+    -- print strands;
     totalTarget := directSum values strands;
     C := complex map(target totalTarget.dd,source totalTarget.dd,
         for tgt in keys strands list (

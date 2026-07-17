@@ -195,7 +195,7 @@ hhlPolytopes(Matrix, Module) := (A, L) -> (
     cells := subdivide(K,V,A');
     (cells,A',g,V))
 --compatibility with the old name for now
-makeHHLPolytopes = hhlPolytopes
+addDeprecatedName(global makeHHLPolytopes, global hhlPolytopes)
 
 --expects a toric variety, and a matrix mapping into the N-latice for Y, giving a toric inclusion.
 hhlResolution = method()
@@ -208,7 +208,7 @@ hhlResolution(NormalToricVariety, Matrix) := (Y, phi) -> (
     if debugLevel>0 then printerr "Labels Complete";
     makeResolution RT)                      -- ~70% of the computation here
 --compatibility with the old name for now
-makeHHLResolution = hhlResolution
+addDeprecatedName(global makeHHLResolution, global hhlResolution)
 
 --expects a toric map, returns the rays from HHL
 hhlVectors = method()

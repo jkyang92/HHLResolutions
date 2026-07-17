@@ -8,7 +8,15 @@ doc ///
         A package to provide and use resolutions of toric subvarieties of toric varieties
     Description
         Text
-            TODO
+            The key functions which are likely to be of interest to most
+            users of this package are @TO hhlResolution@ which constructs
+            the HHL resolution for a map into a toric variety and
+            @TO lineBundleBondalThomsenMonad@ which constructs a monad for
+            a twist of the Cox ring using only the Bondal Thomsen twists.
+            The Bondal Thomsen stratification can also be obtained via
+            @TO bondalThomsenStrata@ with the caveat that the function
+            expects a slightly odd input of the list of normal vectors for
+            the BT stratification.
 ///
 
 
@@ -41,6 +49,8 @@ doc ///
             S = ring Y
             phi = diagonalToricMap(X);
             hhlResolution phi
+        Text
+            There is a old (deprecated) name @TT "makeHHLResolutions"@. If you are using the old name please switch
 ///
 
 doc ///
@@ -100,7 +110,7 @@ doc ///
         : Module
     Description
         Text
-            This function will return the $S$ module $M_\psi\otimes_{S[L]}S$ from the writeup
+            This function will return the $S$ module $M_\psi\otimes_{S[L]}S$
             where $\psi$ is the stratification function for the HHL resolution for a toric morphism $\phi$
         Example
             X = toricProjectiveSpace 3;
@@ -138,4 +148,39 @@ doc ///
         Text
             This returns the vectors which are normals to the hyperplanes from HHL as the ROWS of a matrix.
             The rows are in 1-1 correspondence with the rays of Y and are in the same order.
+///
+
+doc ///
+    Key
+        lineBundleBondalThomsenMonad
+        (lineBundleBondalThomsenMonad,NormalToricVariety,List)
+    Headline
+        Construct the the Bondal Thomsen monad for a line bundle
+    Usage
+        lineBundleBondalThomsenMonad(X,a)
+    Inputs
+        X : NormalToricVariety
+            the toric variety over which to work
+        a : List
+            the exponent vector corresponding to a monomial twist for the line bundle
+    Outputs
+        : Complex
+    Description
+        Text
+            As an example, for $\mathbb{P}^2$, and the line bundle $O(1)$, the following example illustrates
+            the computation. In general the monad may only be a "virtual monad" as in it may only be a monad
+            at the level of sheaves
+        Example
+            X = toricProjectiveSpace 2;
+            S = ring X;
+            C = lineBundleBondalThomsenMonad(X,{1,0,0})
+            prune HH C
+        Text
+            For Hirzebruch surfaces the situation is more complicated, and one does get monads that are not resolutions
+        Example
+            X = hirzebruchSurface 2;
+            S = ring X;
+            C = lineBundleBondalThomsenMonad(X,{0,2,0,1})
+            prune HH C
+            prune sheaf HH_(-1) C
 ///

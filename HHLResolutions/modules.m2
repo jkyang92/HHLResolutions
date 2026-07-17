@@ -89,12 +89,12 @@ andersonModule = method();
 andersonModule(NormalToricVariety) := (X) -> (
     gensToLaurentModule(andersonDiagonalModuleGens(X) / entries, diagonalToricMap X)
     )
-andersonLaurentModule = andersonModule;
+addDeprecatedName(global andersonLaurantModule,global andersonModule);
 
 hhlModule = method();
 hhlModule(ToricMap) := (phi) -> (
     gensToLaurentModule(hhlModuleGens(phi) / entries, phi)
     )
-hhlLaurentModule = hhlModule;
+addDeprecatedName(global hhlLaurantModule,global hhlModule);
 
 --TODO get the favero huang module from the stratification...
