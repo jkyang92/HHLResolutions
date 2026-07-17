@@ -14,9 +14,7 @@ doc ///
             @TO lineBundleBondalThomsenMonad@ which constructs a monad for
             a twist of the Cox ring using only the Bondal Thomsen twists.
             The Bondal Thomsen stratification can also be obtained via
-            @TO bondalThomsenStrata@ with the caveat that the function
-            expects a slightly odd input of the list of normal vectors for
-            the BT stratification.
+            @TO bondalThomsenStrata@.
 ///
 
 
@@ -183,4 +181,64 @@ doc ///
             C = lineBundleBondalThomsenMonad(X,{0,2,0,1})
             prune HH C
             prune sheaf HH_(-1) C
+            prune sheaf HH_0 C
+///
+
+doc ///
+    Key
+        bondalThomsenStrata
+        (bondalThomsenStrata,NormalToricVariety)
+    Headline
+        Construct the the Bondal Thomsen strata for a toric variety
+    Usage
+        bondalThomsenStrata X
+    Inputs
+        X : NormalToricVariety
+            the toric variety over which to work
+    Outputs
+        : HashTable
+    Description
+        Text
+            The returned hash table contains is indexed by the exponent vector representing
+            a monomial corresponding to that stratum
+            Each stratum is given as a list polyhedra, the union of the interiors of which is the strata.
+            The polyhedra are in some fundamental domain of the torus.
+        Example
+            btStrata = bondalThomsenStrata toricProjectiveSpace 2
+            applyValues(btStrata, l -> apply(l, vertices))
+    Caveat
+        The fundamental domain chosen is somewhat arbitrary, some more care might be taken
+        so that each stratum is contained in a polyhedron. Moreover, as the code
+        currently uses a closed fundamental domain, it generally produces redundant polyhedra
+        when viewed on the torus.
+///
+
+doc ///
+    Key
+        "makeHHLResolution"
+    Description
+        Text
+            This is a deprecated name for @TO hhlResolution@
+    SeeAlso
+        hhlResolution
+///
+
+doc ///
+    Key
+        "andersonLaurentModule"
+    Description
+        Text
+            This is a deprecated name for @TO andersonModule@
+    SeeAlso
+        andersonModule
+///
+
+doc ///
+    Key
+        "hhlLaurentModule"
+    Description
+        Text
+            This is a deprecated name for @TO hhlModule@
+    SeeAlso
+        hhlModule
 ///

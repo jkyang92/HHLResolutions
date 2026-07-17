@@ -220,8 +220,9 @@ hhlVectors(NormalToricVariety, Matrix) := (Y, phi) -> (
     raysMatrix * g
     )
 
-
 bondalThomsenStrata = method()
+bondalThomsenStrata(NormalToricVariety) := (X) ->
+    bondalThomsenStrata (rays X)
 bondalThomsenStrata(List) := (normals) -> (
     normalsMatrix := matrix normals;
     L := source normalsMatrix;
