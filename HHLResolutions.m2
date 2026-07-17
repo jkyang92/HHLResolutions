@@ -8,7 +8,7 @@ newPackage(
         },
     Headline => "Code to work with HHL and related resolutions",
     AuxiliaryFiles => true,
-    PackageExports => {"NormalToricVarieties"},
+    PackageExports => {"NormalToricVarieties","Complexes"},
     PackageImports => {"SimplicialComplexes"},
 --    DebuggingMode => true,
     HomePage => "https://github.com/jkyang92/HHLResolutions/"
