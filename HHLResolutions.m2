@@ -33,6 +33,7 @@ export {
     "andersonModule",
     "hhlLaurentModule",
     "hhlModule",
+    "hyperplaneStratificationPolytopes",
     "gensToLaurentModule",
     "gensToToricModule",
     "andersonDiagonalResolution",

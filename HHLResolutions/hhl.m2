@@ -12,20 +12,26 @@ getMinMaxRange = v -> (v = first entries v; floor min v ..< ceiling max v)
 -- after slicing by the hyperplanes with integer constant term
 -- and normals given by the rows of A
 sliceByHyperplanes = method();
-sliceByHyperplanes(Polyhedron,Matrix) := (P, A) -> (
+sliceByHyperplanes(Polyhedron,Matrix,Vector) := (P, A, epsilon) -> (
     cells := {P};
     verts := vertices P;
-    for rho in rows A do cells = (
+    for i from 0 to numRows A - 1 do cells = (
+        rho := A^{i};
+        e := epsilon_i;
+        -- we have a map f : v \mapsto rho * v + e, we want to know,
+        -- what the maximum and minimum values of integers i we need such that the
+        -- slices of the form i+e < f v < i+e+1 cover the original polytope P
 	slices := hashTable for i in getMinMaxRange(rho * verts) list (
-	    i => polyhedronFromHData(-rho || rho, matrix {{-i}, {i+1}}));
-	--
+	    i => polyhedronFromHData(-rho || rho, matrix {{-(i+e)}, {i+e+1}}));
 	flatten for cell in cells list (
-	    for i in getMinMaxRange(rho * vertices cell) list (
+            for i in getMinMaxRange(rho * vertices cell) list (
 		cell' := intersection(cell, slices#i); -- ~40% of this computation, ~10s
 		-- only include the top dimension cells
 		if dim cell' == dim P then cell' else continue))
 	);
     cells)
+sliceByHyperplanes(Polyhedron,Matrix) := (P, A) -> sliceByHyperplanes(P, A, 0_(target A))
+
 
 --takes a matrix and constructs the hyperplane for the kernel as a polyhedron
 kernelPolyhedron = phi -> (
@@ -78,7 +84,7 @@ complexToPolytopes = PC -> applyKeys(faces PC, k -> dim PC - k - 1)
 --takes a ring, a complex, and a lattice basis, the lattice basis should generate the fundemental parallelapiped
 --used in the construction of the complex
 --returns a hashTable containing enough information to make a resolution.
-makeResolutionTable = (S,raysMatrix,cells,L) -> (
+makeResolutionTable = (S, raysMatrix, epsilon, cells, L) -> (
     --verts := vertices PC;
     (verts, faces) := toFacesByDimension cells; -- ~22% of the computation, ~325s
     d := max keys faces;
@@ -88,7 +94,7 @@ makeResolutionTable = (S,raysMatrix,cells,L) -> (
     --polytopesByDimension := applyKeys(faces,i -> d-i);
     polytopesByDimension := hashTable apply(select(keys faces, i -> i!=-1), k -> (k,faces#k));
     degreeMatrix := transpose matrix degrees S;
-    pointToFineDegree := p -> (transpose matrix {apply(entries (raysMatrix * p), ceiling)})_0;
+    pointToFineDegree := p -> (transpose matrix {apply(entries (raysMatrix * p + epsilon), ceiling)})_0;
     pointToDegree := p -> (degreeMatrix * pointToFineDegree p);
     allPolyhedra := select(flatten values polytopesByDimension, p -> p!={});
     hulls := hashTable apply(allPolyhedra, p -> (p, convexHull verts_p)); -- ~14s
@@ -110,27 +116,31 @@ makeResolutionTable = (S,raysMatrix,cells,L) -> (
 	"fineDegreeTable" => fineDegreeTable}
     )
 
-subdivide = (K, V, A) -> (
+subdivide = (K, V, Vepsilon, A, epsilon) -> (
     -- K: the kernel of the map of tori as a polyhedron
     -- V: the fundamental rays spanning the parallelogram
+    -- Vepsilon: shifts for the fundamental rays
     -- A: the matrix of rays
+    -- epsilon: a vector of epsilon shifts
     r := dim K;
     d := (mingens minors(r, V))_(0,0);
     -- take d copies of the the parallelogram cut out by the hyperplanes
     -- corresponding to the fundemental rays V
     hK := hyperplanes K;
+    parallelogramShifts := (-matrix Vepsilon || matrix Vepsilon) +
+        (transpose matrix {toList ((r:0) | (r-1:1) | (1:d))});
     P := polyhedronFromHData(-V || V,
-	transpose matrix {toList ((r:0) | (r-1:1) | (1:d))},
+	parallelogramShifts,
         hK#0,hK#1);
     -- print facets P;
     -- P  = intersection(K, P);
 
     -- the stratification
-    cells := sliceByHyperplanes(P, A); -- ~26s
+    cells := sliceByHyperplanes(P, A, epsilon); -- ~26s
     cells)
 
 makeHHLPolytopesRelative = method()
-makeHHLPolytopesRelative(NormalToricVariety,ToricMap,Matrix) := (Y,phi,fundementalRays) -> (
+makeHHLPolytopesRelative(NormalToricVariety,ToricMap,Matrix) := (Y,phi,fundamentalRays) -> (
     S := ring Y;
     raysMatrix := matrix rays Y;
     A := coker phi;
@@ -138,11 +148,11 @@ makeHHLPolytopesRelative(NormalToricVariety,ToricMap,Matrix) := (Y,phi,fundement
     Arays := psi*(transpose raysMatrix);
     --find a maximal rank submatrix of Arays that has deterimnant 1, if possible.
     r := rank Arays;
-    assert(minors_r(fundementalRays)==1);
+    assert(minors_r(fundamentalRays)==1);
     K := kernelPolyhedron phi;
     assert(r == dim K);
     L := ker transpose phi;
-    (subdivide(K,fundementalRays, raysMatrix),L)
+    (subdivide(K,fundamentalRays, 0_(target fundamentalRays), raysMatrix, 0_(target raysMatrix)),L)
     )
 makeHHLPolytopesRelative(Matrix, Module, Matrix) := (A, L, fundamentalRays) -> (
     g := mingens L;
@@ -152,7 +162,7 @@ makeHHLPolytopesRelative(Matrix, Module, Matrix) := (A, L, fundamentalRays) -> (
     -- the fundamental rays
     V := fundamentalRays * g;
     assert(rank A' == dim K);
-    cells := subdivide(K,V,A');
+    cells := subdivide(K,V, 0_(target V),A', 0_(target A'));
     (cells,L)    
     )
 
@@ -187,15 +197,28 @@ hhlPolytopes(Matrix, Module) := (A, L) -> (
     A' := A * g;
     n := rank L;
     K := polyhedronFromHData(map(ZZ^0,ZZ^n,0),map(ZZ^0,ZZ^1,0));
-    
     -- the fundamental rays
     V := A'^(findMinimalMinorSubset transpose A');
     -- K := kernelPolyhedron phi;
     assert(rank A' == dim K);
-    cells := subdivide(K,V,A');
+    cells := subdivide(K,V, 0_(target V) ,A', 0_(target A'));
     (cells,A',g,V))
 --compatibility with the old name for now
 addDeprecatedName(global makeHHLPolytopes, global hhlPolytopes)
+
+hyperplaneStratificationPolytopes = method()
+--the rows of the matrix should be the normal vectors of the hyperplanes
+hyperplaneStratificationPolytopes (Module, Matrix,Vector) := (L, A, epsilon)  -> (
+    g := mingens L;
+    A' := A * g;
+    n := rank L;
+    K := polyhedronFromHData(map(ZZ^0,ZZ^n,0),map(ZZ^0,ZZ^1,0));
+    -- the fundamental rays
+    funRaysIndices := findMinimalMinorSubset transpose A';
+    V := A'^funRaysIndices;
+    assert(rank A' == dim K);
+    cells := subdivide(K,V, epsilon^funRaysIndices, A', epsilon);
+    (cells,A',epsilon,g,V));
 
 --expects a toric variety, and a matrix mapping into the N-latice for Y, giving a toric inclusion.
 hhlResolution = method()
@@ -204,7 +227,7 @@ hhlResolution(NormalToricVariety, Matrix) := (Y, phi) -> (
     (cells, raysMatrix, L, fundamentalRays) := hhlPolytopes(Y, phi); -- ~26s all in sliceByHyperplanes
     if debugLevel>0 then printerr("Cells Complete, " | #cells | " cells found");
     n := rank L;
-    RT := makeResolutionTable(ring Y, raysMatrix, cells, mingens (ZZ^n)); -- ~28% of the computation here
+    RT := makeResolutionTable(ring Y, raysMatrix, 0_(target raysMatrix), cells, mingens (ZZ^n)); -- ~28% of the computation here
     if debugLevel>0 then printerr "Labels Complete";
     makeResolution RT)                      -- ~70% of the computation here
 --compatibility with the old name for now
